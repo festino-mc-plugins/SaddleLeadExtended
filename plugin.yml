@@ -1,0 +1,9 @@
+name: AnimalFriend
+version: 1.0.0
+authors: [FEST_Channel]
+
+description: Leash/lasso and saddle improvements
+
+main: com.festp.Main
+
+api-version: 1.14
