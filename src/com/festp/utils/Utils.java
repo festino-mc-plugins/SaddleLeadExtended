@@ -44,8 +44,8 @@ public class Utils {
 
 	public static void onEnable()
 	{
-		//create no collide turtle team
-		String team_name = "AnimalFriend_NoCollide"; //HP is HodgePodge, limit of 16 characters
+		// create no collide team
+		String team_name = "AF_NoCollide"; // AF is AnimalFriend, limit of 16 characters
 		Server server = plugin.getServer();
 		Scoreboard sb = server.getScoreboardManager().getMainScoreboard();
 		team_no_collide = sb.getTeam(team_name);
