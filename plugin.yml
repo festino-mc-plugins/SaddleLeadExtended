@@ -1,9 +1,11 @@
-name: AnimalFriend
+name: SaddleLeadExtended
 version: 1.0.0
 authors: [FEST_Channel]
 
 description: Leash/lasso and saddle improvements
 
 main: com.festp.Main
+commands:
+         wear:
 
 api-version: 1.14

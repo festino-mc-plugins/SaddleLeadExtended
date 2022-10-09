@@ -27,7 +27,7 @@ import com.festp.Main;
 
 public class Utils {
 	private static Main plugin;
-	private static Team team_no_collide;
+	private static Team teamNoCollide;
 	public static final double EPSILON = 0.0001;
 	
 	public static void setPlugin(Main pl) {
@@ -45,27 +45,27 @@ public class Utils {
 	public static void onEnable()
 	{
 		// create no collide team
-		String team_name = "AF_NoCollide"; // AF is AnimalFriend, limit of 16 characters
+		String team_name = "SLE_NoCollide"; // SLE is SaddleLeadExtended, limit of 16 characters
 		Server server = plugin.getServer();
 		Scoreboard sb = server.getScoreboardManager().getMainScoreboard();
-		team_no_collide = sb.getTeam(team_name);
-		if (team_no_collide == null)
-			team_no_collide = sb.registerNewTeam(team_name);
-		team_no_collide.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+		teamNoCollide = sb.getTeam(team_name);
+		if (teamNoCollide == null)
+			teamNoCollide = sb.registerNewTeam(team_name);
+		teamNoCollide.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 	}
 	public static void onDisable()
 	{
-		team_no_collide.unregister(); //if plugin will be removed anywhen
+		teamNoCollide.unregister(); // if plugin will be removed anywhen
 	}
 	
 	public static void setNoCollide(Entity e, boolean val)
 	{
 		String entry = e.getUniqueId().toString();
 		if (val) {
-			if (!team_no_collide.hasEntry(entry))
-				team_no_collide.addEntry(entry);
+			if (!teamNoCollide.hasEntry(entry))
+				teamNoCollide.addEntry(entry);
 		} else
-			team_no_collide.removeEntry(entry);
+			teamNoCollide.removeEntry(entry);
 	}
 	
 	public static void noGravityTemp(LivingEntity e, int ticks)
@@ -126,7 +126,7 @@ public class Utils {
 	}
 	public static void setBeaconData(LivingEntity beacon, String beaconId)
 	{
-		ItemStack identificator = new ItemStack(Material.BARRIER); //to identify issues
+		ItemStack identificator = new ItemStack(Material.BARRIER); // to identify issues
     	NamespacedKey key = new NamespacedKey(plugin, beaconId);
 		identificator.getItemMeta().getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte)0);
  		//if(beacon instanceof ArmorStand)
