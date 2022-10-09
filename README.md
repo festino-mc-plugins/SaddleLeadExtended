@@ -1,4 +1,4 @@
-# AnimalFriend
+# SaddleLeadExtended
  Leash/lasso and saddle improvements
 
 <h3>Gameplay changes</h3>  
