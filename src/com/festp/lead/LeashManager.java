@@ -202,11 +202,14 @@ public class LeashManager {
 		case SQUID:
 		case GLOW_SQUID:
 		case GOAT:
-		// 1.18
 		case AXOLOTL:
 		// 1.19
 		case ALLAY:
 		case FROG:
+		// 1.19.3
+		case CAMEL:
+		// 1.20
+		case SNIFFER:
 			return true;
 		default:
 			return false;
