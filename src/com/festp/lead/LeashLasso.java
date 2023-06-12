@@ -1,5 +1,6 @@
 package com.festp.lead;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -157,6 +158,8 @@ public class LeashLasso
 	
 	public void dropLead()
 	{
+		if (holder instanceof Player && ((Player)holder).getGameMode() == GameMode.CREATIVE)
+			return;
 		Utils.giveOrDrop(holder, lead_drops);
 	}
 	public void despawnLasso()
