@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Turtle;
 import org.bukkit.entity.Vex;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -129,7 +130,9 @@ public class Utils {
 	{
 		ItemStack identificator = new ItemStack(Material.BARRIER); // to identify issues
     	NamespacedKey key = new NamespacedKey(plugin, beaconId);
-		identificator.getItemMeta().getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte)0);
+		ItemMeta meta = identificator.getItemMeta();
+		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte)0);
+		identificator.setItemMeta(meta);
  		//if(beacon instanceof ArmorStand)
  		beacon.getEquipment().setChestplate(identificator);
  		//else
