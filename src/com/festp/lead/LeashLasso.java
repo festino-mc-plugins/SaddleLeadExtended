@@ -26,47 +26,47 @@ public class LeashLasso
 {
 	public static final String BEACON_ID = "beacon_lasso";
 	private static LeashManager manager = null;
-	public static final Class<? extends LivingEntity> projectile_class = Turtle.class;
-	private static final Class<? extends LivingEntity> beacon_class = Bat.class; // because Turtle has vanilla leash mechanics
+	public static final Class<? extends LivingEntity> PROJECTILE_CLASS = Turtle.class;
+	private static final Class<? extends LivingEntity> BEACON_CLASS = Bat.class; // because Turtle has vanilla leash mechanics
 	private static final double LEAD_LOWERING = -0.8, FENCE_HALF_WIDTH = (4 / 16) / 2, MOB_LEASH_R = 0.1, EPSILON = 0.001;
 	private static final int STICKY_DESPAWN_DELAY = 20, REMOVE_COOLDOWN = 60;
 	private static final Material[] STICKY_BLOCKS = { Material.CACTUS, Material.SLIME_BLOCK };
 	
-	ItemStack lead_drops;
+	ItemStack leadDrops;
 	Entity holder;
 	LivingEntity projectile;
 	LivingEntity workaround;
-	Location last_pos;
-	Vector old_velocity;
-	int despawn_delay = -1;
+	Location lastPos;
+	Vector oldVelocity;
+	int despawnDelay = -1;
 	
 	public static void setLeashManager(LeashManager manager)
 	{
-		if(LeashLasso.manager == null)
+		if (LeashLasso.manager == null)
 			LeashLasso.manager = manager;
 	}
 	
 	public LeashLasso(Entity holder, Vector velocity, ItemStack drops)
 	{
 		this.holder = holder;
-		old_velocity = velocity;
+		oldVelocity = velocity;
 		Location spawn_loc = getThrowLocation(holder);
-		last_pos = spawn_loc;
+		lastPos = spawn_loc;
 		
-		projectile = Utils.spawnBeacon(spawn_loc, projectile_class, BEACON_ID, true);
+		projectile = Utils.spawnBeacon(spawn_loc, PROJECTILE_CLASS, BEACON_ID, true);
 		projectile.setGravity(true);
 		projectile.setVelocity(velocity);
 		Utils.setNoCollide(projectile, true);
 		
 		//because beacon is armorstand that can't draw leash
-		workaround = Utils.spawnBeacon(spawn_loc, beacon_class, BEACON_ID, false);
+		workaround = Utils.spawnBeacon(spawn_loc, BEACON_CLASS, BEACON_ID, false);
 		workaround.setLeashHolder(holder);
 		
-		lead_drops = drops;
+		leadDrops = drops;
 
 		//if top of projectile in sticky block
 		if (Utils.contains(STICKY_BLOCKS, projectile.getLocation().add(0, projectile.getHeight(), 0).getBlock().getType())) {
-			process_sticky();
+			processSticky();
 		}
 	}
 	
@@ -74,24 +74,23 @@ public class LeashLasso
 	  * @return <b>true</b> - if lasso will be alive this tick */
 	public boolean tick()
 	{
-		if (despawn_delay >= 0) {
-			if(despawn_delay > 0) {
-				despawn_delay--;
-				return true;
-			}
-			else {
-				dropLead();
-				despawnLasso();
-				return false;
-			}
+		if (despawnDelay > 0) {
+			despawnDelay--;
+			return true;
 		}
-		teleport_workaround();
+		if (despawnDelay == 0) {
+			dropLead();
+			despawnLasso();
+			return false;
+		}
+		
+		teleportWorkaround();
 		workaround.setVelocity(projectile.getVelocity());
-		Location current_pos = projectile.getLocation();
-		boolean on_ground = projectile.isOnGround();
+		Location currentPos = projectile.getLocation();
+		boolean isOnGround = projectile.isOnGround();
 			
 		Block current = projectile.getLocation().getBlock();
-		//unleash/break distance -> return lead
+		// unleash/break distance -> return lead
 		if (!workaround.isLeashed() || projectile.getWorld() != holder.getWorld() || workaround.getWorld() != holder.getWorld()) {
 			despawnLasso();
 			return false;
@@ -103,21 +102,21 @@ public class LeashLasso
 			despawnLasso();
 			return false;
 		}
-		//collide cactus/slime block -> return with delay
-		if (getFacedBlock(last_pos, STICKY_BLOCKS) != null) {
-			process_sticky();
+		// collide cactus/slime block -> return with delay
+		if (getFacedBlock(lastPos, STICKY_BLOCKS) != null) {
+			processSticky();
 			return true;
 		}
-		//collide lava/fire -> kill
+		// collide lava/fire -> kill (no drop)
 		else if (current.getType() == Material.LAVA || current.getType() == Material.FIRE) {
 			despawnLasso();
 			return false;
 		}
-		//collide top/bottom -> return lead
+		// collide top/bottom -> return lead
 		if (projectile.getVelocity().lengthSquared() < EPSILON) {
-			Location beacon_top = projectile.getLocation().add(0, projectile.getHeight()*0.5, 0);
+			Location beaconTop = projectile.getLocation().add(0, projectile.getHeight()*0.5, 0);
 			Location ceiling = current.getRelative(BlockFace.UP).getLocation();
-			if (ceiling.subtract(beacon_top).getY() < EPSILON)
+			if (ceiling.subtract(beaconTop).getY() < EPSILON)
 			{
 				dropLead();
 				despawnLasso();
@@ -125,7 +124,7 @@ public class LeashLasso
 			}
 		}
 		
-		//collide with fence -> hitch
+		// collide with fence -> hitch
 		if (UtilsType.isFence(current.getType())) {
 			if (isFacedFence(projectile.getLocation(), projectile.getVelocity()))
 			{
@@ -134,7 +133,7 @@ public class LeashLasso
 				return false;
 			}
 		}
-		if (on_ground) {
+		if (isOnGround) {
 			if (UtilsType.isFence(current.getRelative(BlockFace.DOWN).getType()) && UtilsType.isAir(current.getType()))
 				spawnLeashHitch(current.getRelative(BlockFace.DOWN));
 			else
@@ -151,8 +150,8 @@ public class LeashLasso
 				return false;
 			}
 		
-		last_pos = current_pos;
-		old_velocity = projectile.getVelocity();
+		lastPos = currentPos;
+		oldVelocity = projectile.getVelocity();
 		return true;
 	}
 	
@@ -160,7 +159,7 @@ public class LeashLasso
 	{
 		if (holder instanceof Player && ((Player)holder).getGameMode() == GameMode.CREATIVE)
 			return;
-		Utils.giveOrDrop(holder, lead_drops);
+		Utils.giveOrDrop(holder, leadDrops);
 	}
 	public void despawnLasso()
 	{
@@ -170,29 +169,29 @@ public class LeashLasso
 	
 	private void leashEntity(LivingEntity e)
 	{
-		manager.addLeashed(holder, e, lead_drops, REMOVE_COOLDOWN);
+		manager.addLeashed(holder, e, leadDrops, REMOVE_COOLDOWN);
 	}
 	
 	private void spawnLeashHitch(Block b)
 	{
 		Location hitch_loc = b.getLocation();
 		LeashHitch hitch = NMSUtils.spawnLeashHitch(hitch_loc);
-		manager.addLeashed(hitch, holder, lead_drops, REMOVE_COOLDOWN);
+		manager.addLeashed(hitch, holder, leadDrops, REMOVE_COOLDOWN);
 		despawnLasso();
 	}
 	
-	private void teleport_workaround()
+	private void teleportWorkaround()
 	{
 		workaround.teleport(projectile.getLocation().add(0, LEAD_LOWERING, 0));
 	}
 	
-	private void process_sticky()
+	private void processSticky()
 	{
 		projectile.setGravity(false);
 		projectile.teleport(getFacingLocation());
 		projectile.setVelocity(new Vector());
-		teleport_workaround();
-		despawn_delay = STICKY_DESPAWN_DELAY;
+		teleportWorkaround();
+		despawnDelay = STICKY_DESPAWN_DELAY;
 	}
 	
 	public static Location getThrowLocation(Entity holder)
@@ -226,9 +225,9 @@ public class LeashLasso
 	private Block getFacedBlock(Location loc, Material[] type)
 	{
 		Vector new_v = projectile.getVelocity();
-		double x1 = old_velocity.getX(), x2 = new_v.getX();
-		double y1 = old_velocity.getY(), y2 = new_v.getY();
-		double z1 = old_velocity.getZ(), z2 = new_v.getZ();
+		double x1 = oldVelocity.getX(), x2 = new_v.getX();
+		double y1 = oldVelocity.getY(), y2 = new_v.getY();
+		double z1 = oldVelocity.getZ(), z2 = new_v.getZ();
 		Block main_block = loc.getBlock();
 		//x moving had stopped
 		if (!almostZero(x1) && almostZero(x2)) {
@@ -265,16 +264,16 @@ public class LeashLasso
 	}
 	private Location getFacingLocation()
 	{
-		double v1 = old_velocity.lengthSquared();
+		double v1 = oldVelocity.lengthSquared();
 		double v2 = projectile.getVelocity().lengthSquared();
-		Location result = last_pos.clone();
+		Location result = lastPos.clone();
 		//(loc_old * v_old + loc_new * v_new) / (v_old + v_new)
 		result.multiply(v1).add(projectile.getLocation().multiply(v2)).multiply(1 / (v1 + v2));
 		
 		Vector new_v = projectile.getVelocity();
-		double x1 = old_velocity.getX(), x2 = new_v.getX();
-		double y1 = old_velocity.getY(), y2 = new_v.getY();
-		double z1 = old_velocity.getZ(), z2 = new_v.getZ();
+		double x1 = oldVelocity.getX(), x2 = new_v.getX();
+		double y1 = oldVelocity.getY(), y2 = new_v.getY();
+		double z1 = oldVelocity.getZ(), z2 = new_v.getZ();
 		//x moving had stopped
 		if (!almostZero(x1) && almostZero(x2)) {
 			if (x1 < 0)
