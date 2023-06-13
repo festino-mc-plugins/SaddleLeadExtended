@@ -1,6 +1,7 @@
 package com.festp.lead;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -24,6 +25,7 @@ import org.bukkit.util.Vector;
 import com.festp.Config;
 import com.festp.utils.NMSUtils;
 import com.festp.utils.Utils;
+import com.festp.utils.UtilsVersion;
 import com.festp.utils.UtilsWorld;
 
 public class LeashManager {
@@ -38,6 +40,66 @@ public class LeashManager {
 	private List<LeashedPlayer> leashedPlayers = new ArrayList<>();
 	private List<LeashLasso> thrownLasso = new ArrayList<>();
 	private static final Predicate<Entity> entity_filter = (e) -> isLeashable(e);
+	
+	private static final EntityType[] LEASHABLE_TYPES = getLeashableTypes();
+	private static EntityType[] getLeashableTypes() {
+		List<EntityType> types = new ArrayList<>();
+		// 1.6.1-
+		types.addAll(Arrays.asList(new EntityType[] {
+				EntityType.CHICKEN, EntityType.PIG, EntityType.SHEEP, EntityType.COW, EntityType.SNOWMAN,
+				EntityType.WOLF, EntityType.MUSHROOM_COW, EntityType.IRON_GOLEM, EntityType.OCELOT, EntityType.CAT,
+				EntityType.HORSE, EntityType.DONKEY, EntityType.MULE
+				}));
+		if (UtilsVersion.isEqualOrGreater("1.8")) {
+			types.add(EntityType.RABBIT);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.10")) {
+			types.add(EntityType.POLAR_BEAR);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.11")) {
+			types.add(EntityType.LLAMA);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.12")) {
+			types.add(EntityType.PARROT);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.13")) {
+			types.add(EntityType.DOLPHIN);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.14")) {
+			types.add(EntityType.TRADER_LLAMA);
+			types.add(EntityType.FOX);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.15")) {
+			types.add(EntityType.BEE);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.16")) {
+			types.add(EntityType.SKELETON_HORSE);
+			types.add(EntityType.ZOMBIE_HORSE);
+			types.add(EntityType.HOGLIN);
+			types.add(EntityType.STRIDER);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.16.2")) {
+			types.add(EntityType.ZOGLIN);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.17")) {
+			types.add(EntityType.SQUID);
+			types.add(EntityType.GLOW_SQUID);
+			types.add(EntityType.GOAT);
+			types.add(EntityType.AXOLOTL);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.19")) {
+			types.add(EntityType.ALLAY);
+			types.add(EntityType.FROG);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.19.3")) {
+			types.add(EntityType.CAMEL);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.20")) {
+			types.add(EntityType.SNIFFER);
+		}
+		
+		return types.toArray(new EntityType[0]);
+	}
 	
 	public LeashManager(JavaPlugin plugin)
 	{
@@ -160,60 +222,7 @@ public class LeashManager {
 	{
 		EntityType et = e.getType();
 		// TODO may check if entity is already leashed
-		// TODO add multi-version support
-		switch (et) {
-		// 1.6.1-
-		case CHICKEN:
-		case PIG:
-		case SHEEP:
-		case COW:
-		case SNOWMAN:
-		case WOLF:
-		case MUSHROOM_COW:
-		case IRON_GOLEM:
-		case OCELOT:
-		case CAT:
-		case DONKEY:
-		case HORSE:
-		case MULE:
-		// 1.8
-		case RABBIT:
-		// 1.10
-		case POLAR_BEAR:
-		// 1.11
-		case LLAMA:
-		// 1.12
-		case PARROT:
-		// 1.13
-		case DOLPHIN:
-		// 1.14
-		case TRADER_LLAMA:
-		case FOX:
-		// 1.15
-		case BEE:
-		// 1.16
-		case SKELETON_HORSE:
-		case ZOMBIE_HORSE:
-		case HOGLIN:
-		case STRIDER:
-		// 1.16.2
-		case ZOGLIN:
-		// 1.17
-		case SQUID:
-		case GLOW_SQUID:
-		case GOAT:
-		case AXOLOTL:
-		// 1.19
-		case ALLAY:
-		case FROG:
-		// 1.19.3
-		case CAMEL:
-		// 1.20
-		case SNIFFER:
-			return true;
-		default:
-			return false;
-		}
+		return Utils.contains(LEASHABLE_TYPES, et);
 	}
 	
 	public boolean canLeash(Entity e) {
