@@ -99,6 +99,7 @@ public class Utils {
  			if (entity_type == Vex.class)
  				beacon.getEquipment().setItemInMainHand(null); // must be applied immediately
  	 		
+ 			beacon.setInvisible(true);
  	 		beacon.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100000000, 1, false, false));
  	 		beacon.setInvulnerable(true);
  	 		if (!gravity) {

@@ -109,6 +109,7 @@ public class SaddledBear {
 			} else {
 				updateHealth();
 				applyInvisibility(controller);
+				stopBurning(controller);
 				main.teleport(controller.getLocation()); // TODO try move 1 tick forward, if it is not in solid or lava
 				main.setVelocity(controller.getVelocity());
 			}
@@ -116,7 +117,6 @@ public class SaddledBear {
 		applyInvisibility(visual);
 		applyImmortality(visual);
 		//applyWither(visual);
-		stopBurning(controller);
 		stopBurning(visual);
 		visual.teleport(main.getLocation().add(SADDLE_SHIFT));
 		visual.setVelocity(main.getVelocity());
@@ -163,6 +163,7 @@ public class SaddledBear {
 	}
 	
 	public static void applyInvisibility(LivingEntity le) {
+		le.setInvisible(true);
 		le.addPotionEffect(EFFECT_INVISIBILITY);
 	}
 	
