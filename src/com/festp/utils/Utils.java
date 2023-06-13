@@ -155,7 +155,7 @@ public class Utils {
 	 * <b>Item</b> if at least one item was dropped*/
 	public static void giveOrDrop(Entity entity, ItemStack stack)
 	{
-		if (!(entity instanceof Player))
+		if (!(entity instanceof Player) || !((Player)entity).isOnline())
 		{
 			dropUngiven(entity.getLocation(), stack);
 			return;
