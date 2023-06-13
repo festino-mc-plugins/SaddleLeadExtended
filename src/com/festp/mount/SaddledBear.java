@@ -116,6 +116,8 @@ public class SaddledBear {
 		applyInvisibility(visual);
 		applyImmortality(visual);
 		//applyWither(visual);
+		stopBurning(controller);
+		stopBurning(visual);
 		visual.teleport(main.getLocation().add(SADDLE_SHIFT));
 		visual.setVelocity(main.getVelocity());
 		return true;
@@ -153,6 +155,11 @@ public class SaddledBear {
 		if (power < JUMP_POWER_THRESHOLD) {
 			main.getWorld().playSound(main.getEyeLocation(), Sound.ENTITY_POLAR_BEAR_WARNING, SoundCategory.PLAYERS, 0.5f, 1.0f);
 		}
+	}
+	
+	public static void stopBurning(Entity entity) {
+		if (entity.getFireTicks() > 0)
+			entity.setFireTicks(0);
 	}
 	
 	public static void applyInvisibility(LivingEntity le) {

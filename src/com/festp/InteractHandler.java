@@ -66,20 +66,27 @@ public class InteractHandler implements Listener
 				removedBeacons.add(beacon);
 				continue;
 			}
+			if (beacon.getFireTicks() > 0) {
+				beacon.setFireTicks(0);
+			}
+			
 			// saddled entities
 			if (isSaddleBeacon(beacon)) {
-				if (beacon.getPassengers().size() == 0 || beacon.getVehicle() == null)
+				if (beacon.getPassengers().size() == 0 || beacon.getVehicle() == null) {
 					beacon.remove();
-				else {
-					LivingEntity camelPlayer = (LivingEntity)beacon.getVehicle();
-					
-					if (camelPlayer.getEquipment().getHelmet() == null || camelPlayer.getEquipment().getHelmet().getType() != Material.SADDLE) // unwear saddle
-						beacon.remove();
-					else {
-						beacon.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue( camelPlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() );
-						beacon.setHealth( camelPlayer.getHealth() );
-					}
+					continue;
 				}
+				
+				LivingEntity vehiclePlayer = (LivingEntity)beacon.getVehicle();
+				if (vehiclePlayer.getEquipment().getHelmet() == null || vehiclePlayer.getEquipment().getHelmet().getType() != Material.SADDLE) {
+					// saddle has been taken off
+					beacon.remove();
+					continue;
+				}
+				
+				beacon.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue( vehiclePlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() );
+				beacon.setHealth( vehiclePlayer.getHealth() );
+				continue;
 			}
 			// leashed players
 			else if (isLeashBeacon(beacon)) {
