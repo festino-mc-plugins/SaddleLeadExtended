@@ -7,7 +7,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.entity.LivingEntity;
@@ -84,7 +83,7 @@ public class InteractHandler implements Listener
 					continue;
 				}
 				
-				beacon.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue( vehiclePlayer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() );
+				beacon.getAttribute(Utils.getMaxHealthAttribute()).setBaseValue( vehiclePlayer.getAttribute(Utils.getMaxHealthAttribute()).getBaseValue() );
 				beacon.setHealth( vehiclePlayer.getHealth() );
 				continue;
 			}

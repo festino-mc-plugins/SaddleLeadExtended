@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -30,6 +31,9 @@ public class Utils {
 	private static Main plugin;
 	private static Team teamNoCollide;
 	public static final double EPSILON = 0.0001;
+	
+	private static final Attribute MAX_HEALTH_ATTRIBUTE = initAttribute("MAX_HEALTH");
+	private static final Attribute MOVEMENT_SPEED_ATTRIBUTE = initAttribute("MOVEMENT_SPEED");
 	
 	public static void setPlugin(Main pl) {
 		plugin = pl;
@@ -176,5 +180,28 @@ public class Utils {
 		item.setVelocity(new Vector());
 		item.setPickupDelay(0);
 		return item;
+	}
+	
+	public static Attribute getMaxHealthAttribute() {
+		return MAX_HEALTH_ATTRIBUTE;
+	}
+	
+	public static Attribute getMovementSpeedAttribute() {
+		return MOVEMENT_SPEED_ATTRIBUTE;
+	}
+	
+	private static Attribute initAttribute(String name) {
+		if (Attribute.class.getEnumConstants() == null) {
+			if (name == "MAX_HEALTH")
+			    return Attribute.MAX_HEALTH;
+			if (name == "MOVEMENT_SPEED")
+				return Attribute.MOVEMENT_SPEED;
+		}
+		// Attribute was an enum before 1.21
+		for (Attribute attribute : Attribute.class.getEnumConstants()) {
+			if (attribute.toString() == name)
+				return attribute;
+		}
+		return null;
 	}
 }

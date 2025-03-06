@@ -15,6 +15,7 @@ import org.bukkit.entity.Pig;
 import org.bukkit.entity.PolarBear;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.loot.LootTable;
 import org.bukkit.loot.LootTables;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -24,32 +25,34 @@ import org.bukkit.util.Vector;
 import com.festp.utils.Utils;
 
 public class SaddledBear {
+	private static final LootTable EMPTY_LOOTTABLE = LootTables.BAT.getLootTable();
 	private static final PotionEffect EFFECT_INVISIBILITY = new PotionEffect(PotionEffectType.INVISIBILITY, 10000, 0, false, false, false);
-	private static final PotionEffect EFFECT_IMMORTALITY = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 5, 5, false, false, false);
+	private static final PotionEffect EFFECT_IMMORTALITY = new PotionEffect(PotionEffectType.RESISTANCE, 5, 5, false, false, false);
 	private static final PotionEffect EFFECT_WITHER = new PotionEffect(PotionEffectType.WITHER, 10000, 10, false, false, false);
 	private static final Vector SADDLE_SHIFT = new Vector(0, 0.55, 0);
 	private static final double JUMP_STRENGTH = 0.43;
 	private static final double JUMP_POWER_THRESHOLD = 0.55; // min 4/9
 	private static final String LINK_LORE = "linked_to_bear";
+	private static final double HORSE_SPEED_MULTIPLIER = 0.4;
 	
-	private PolarBear main;
+	private PolarBear bear;
 	private Horse controller;
-	private Pig visual;
+	private Pig saddlePig;
 
 	private static final int START_DELAY = 20;
 	private int cooldown = START_DELAY;
 	
 	public SaddledBear(PolarBear saddled)
 	{
-		main = saddled;
-		visual = main.getWorld().spawn(main.getLocation().add(SADDLE_SHIFT), Pig.class, new Consumer<Pig>() {
+		bear = saddled;
+		saddlePig = bear.getWorld().spawn(bear.getLocation().add(SADDLE_SHIFT), Pig.class, new Consumer<Pig>() {
 			@Override
 			public void accept(Pig pig) {
 				pig.setGravity(false);
 				pig.setAI(false);
 				pig.setSilent(true);
 				pig.setSaddle(true);
-				pig.setLootTable(LootTables.EMPTY.getLootTable());
+				pig.setLootTable(EMPTY_LOOTTABLE); 
 				Utils.setNoCollide(pig, true);
 				applyInvisibility(pig);
 				link(pig);
@@ -59,7 +62,7 @@ public class SaddledBear {
 	public List<Entity> getPassengers()
 	{
 		// add second passenger to list
-		return main.getPassengers();
+		return bear.getPassengers();
 	}
 	
 	public void addPassenger(Entity entity)
@@ -70,7 +73,7 @@ public class SaddledBear {
 			// add second passenger?
 			return;
 		}
-		controller = main.getWorld().spawn(main.getLocation(), Horse.class, new Consumer<Horse>() {
+		controller = bear.getWorld().spawn(bear.getLocation(), Horse.class, new Consumer<Horse>() {
 			@Override
 			public void accept(Horse horse) {
 				horse.setSilent(true);
@@ -78,13 +81,13 @@ public class SaddledBear {
 				horse.setAdult();
 				horse.setTamed(true);
 				horse.getInventory().setSaddle(new ItemStack(Material.SADDLE));
-				horse.setLootTable(LootTables.EMPTY.getLootTable());
+				horse.setLootTable(EMPTY_LOOTTABLE);
 				horse.setRemoveWhenFarAway(true);
 				applyInvisibility(horse);
-				double bearSpeed = main.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() / 2.5;
-				double bearHealth = main.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-				horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(bearSpeed);
-				horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(bearHealth);
+				double bearSpeed = bear.getAttribute(Utils.getMovementSpeedAttribute()).getBaseValue() * HORSE_SPEED_MULTIPLIER;
+				double bearHealth = bear.getAttribute(Utils.getMaxHealthAttribute()).getBaseValue();
+				horse.getAttribute(Utils.getMovementSpeedAttribute()).setBaseValue(bearSpeed);
+				horse.getAttribute(Utils.getMaxHealthAttribute()).setBaseValue(bearHealth);
 				horse.setJumpStrength(JUMP_STRENGTH);
 				link(horse);
 				horse.addPassenger(entity);
@@ -96,10 +99,10 @@ public class SaddledBear {
 	{
 		if (cooldown > 0)
 			cooldown--;
-		if (!main.isValid() || main.isDead()) {
+		if (!bear.isValid() || bear.isDead()) {
 			remove();
-			if (main.isDead())
-				main.getWorld().dropItemNaturally(main.getLocation(), new ItemStack(Material.SADDLE));
+			if (bear.isDead())
+				bear.getWorld().dropItemNaturally(bear.getLocation(), new ItemStack(Material.SADDLE));
 			return false;
 		}
 		if (controller != null) {
@@ -110,29 +113,29 @@ public class SaddledBear {
 				updateHealth();
 				applyInvisibility(controller);
 				stopBurning(controller);
-				main.teleport(controller.getLocation()); // TODO try move 1 tick forward, if it is not in solid or lava
-				main.setVelocity(controller.getVelocity());
+				bear.teleport(controller.getLocation()); // TODO try move 1 tick forward, if it is not in solid or lava
+				bear.setVelocity(controller.getVelocity());
 			}
 		}
-		applyInvisibility(visual);
-		applyImmortality(visual);
+		applyInvisibility(saddlePig);
+		applyImmortality(saddlePig);
 		//applyWither(visual);
-		stopBurning(visual);
-		visual.teleport(main.getLocation().add(SADDLE_SHIFT));
-		visual.setVelocity(main.getVelocity());
+		stopBurning(saddlePig);
+		saddlePig.teleport(bear.getLocation().add(SADDLE_SHIFT));
+		saddlePig.setVelocity(bear.getVelocity());
 		return true;
 	}
 	
 	private void updateHealth() {
-		controller.setHealth(main.getHealth());
+		controller.setHealth(bear.getHealth());
 	}
 	
 	public PolarBear getBear() {
-		return main;
+		return bear;
 	}
 	
 	public Pig getSaddle() {
-		return visual;
+		return saddlePig;
 	}
 	
 	public Horse getHorse() {
@@ -140,20 +143,20 @@ public class SaddledBear {
 	}
 	
 	public boolean isPart(Entity entity) {
-		return entity.equals(main)
+		return entity.equals(bear)
 				|| entity.equals(controller)
-				|| entity.equals(visual);
+				|| entity.equals(saddlePig);
 	}
 	
 	public void remove() {
 		if (controller != null)
 			controller.remove();
-		visual.remove();
+		saddlePig.remove();
 	}
 
 	public void onJump(float power) {
 		if (power < JUMP_POWER_THRESHOLD) {
-			main.getWorld().playSound(main.getEyeLocation(), Sound.ENTITY_POLAR_BEAR_WARNING, SoundCategory.PLAYERS, 0.5f, 1.0f);
+			bear.getWorld().playSound(bear.getEyeLocation(), Sound.ENTITY_POLAR_BEAR_WARNING, SoundCategory.PLAYERS, 0.5f, 1.0f);
 		}
 	}
 	
@@ -200,7 +203,7 @@ public class SaddledBear {
 	private void link(LivingEntity le) {
 		ItemStack helmet = new ItemStack(Material.OAK_BUTTON);
 		ItemMeta meta = helmet.getItemMeta();
-		meta.setLore(Arrays.asList(LINK_LORE, main.getUniqueId().toString()));
+		meta.setLore(Arrays.asList(LINK_LORE, bear.getUniqueId().toString()));
 		helmet.setItemMeta(meta);
 		le.getEquipment().setHelmet(helmet);
 	}

@@ -1,7 +1,6 @@
 package com.festp.utils;
 
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
@@ -576,7 +575,7 @@ public class UtilsType
 
 	public static boolean isPlant(Material m) {
 		return is_flower(m) || isMushroom(m) || isSapling(m) || m == Material.DEAD_BUSH || m == Material.VINE || m == Material.LILY_PAD
-				|| m == Material.GRASS|| m == Material.TALL_GRASS || m == Material.FERN || m == Material.LARGE_FERN;
+				|| m == Material.SHORT_GRASS || m == Material.TALL_GRASS || m == Material.FERN || m == Material.LARGE_FERN;
 	}
 
 	

@@ -8,9 +8,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import net.minecraft.core.BlockPosition;
+/*import net.minecraft.core.BlockPosition;
 import net.minecraft.server.level.WorldServer;
-import net.minecraft.world.entity.decoration.EntityLeash;
+import net.minecraft.world.entity.decoration..EntityLeash;*/
 
 public class NMSUtils
 {
@@ -34,7 +34,7 @@ public class NMSUtils
 	public static boolean isLeashHitch(Entity entity)
 	{
 		Class<?> clazz = getBukkitClass("entity.CraftLeash");
-		return entity instanceof LeashHitch || clazz.isInstance(entity);//entity instanceof CraftLeash;//LeashHitch;
+		return entity instanceof LeashHitch || clazz.isInstance(entity);
 	}
 	
 	public static LeashHitch spawnLeashHitch(Location hitchLoc)
@@ -79,7 +79,7 @@ public class NMSUtils
 		
 		// workaround from
 		// https://hub.spigotmc.org/jira/browse/SPIGOT-4674?focusedCommentId=32808&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-32808
-		WorldServer nmsWorld;
+		/*WorldServer nmsWorld;
 		try {
 			Class<?> craftWorldClass = getBukkitClass("CraftWorld");
 			Object craftWorld = craftWorldClass.cast(hitchLoc.getWorld());
@@ -93,7 +93,8 @@ public class NMSUtils
 		BlockPosition nmsPos = new BlockPosition((int)hitchLoc.getX(), (int)hitchLoc.getY(), (int)hitchLoc.getZ());
 		EntityLeash nmsLeashHitch = new EntityLeash(nmsWorld, nmsPos);
 		nmsWorld.addFreshEntity(nmsLeashHitch, SpawnReason.DEFAULT); // is equal to .b(nmsLeashHitch)
-		LeashHitch hitch = (LeashHitch) nmsLeashHitch.getBukkitEntity();
+		LeashHitch hitch = (LeashHitch) nmsLeashHitch.getBukkitEntity();*/
+		LeashHitch hitch = hitchLoc.getWorld().spawn(hitchLoc, LeashHitch.class);
 		
 		return hitch;
 	}

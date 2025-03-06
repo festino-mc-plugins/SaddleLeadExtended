@@ -46,8 +46,8 @@ public class LeashManager {
 		List<EntityType> types = new ArrayList<>();
 		// 1.6.1-
 		types.addAll(Arrays.asList(new EntityType[] {
-				EntityType.CHICKEN, EntityType.PIG, EntityType.SHEEP, EntityType.COW, EntityType.SNOWMAN,
-				EntityType.WOLF, EntityType.MUSHROOM_COW, EntityType.IRON_GOLEM, EntityType.OCELOT, EntityType.CAT,
+				EntityType.CHICKEN, EntityType.PIG, EntityType.SHEEP, EntityType.COW,
+				EntityType.WOLF, EntityType.IRON_GOLEM, EntityType.OCELOT, EntityType.CAT,
 				EntityType.HORSE, EntityType.DONKEY, EntityType.MULE
 				}));
 		if (UtilsVersion.isEqualOrGreater("1.8")) {
@@ -96,6 +96,35 @@ public class LeashManager {
 		}
 		if (UtilsVersion.isEqualOrGreater("1.20")) {
 			types.add(EntityType.SNIFFER);
+		}
+		if (UtilsVersion.isEqualOrGreater("1.21")) {
+			types.add(EntityType.MOOSHROOM);
+			types.add(EntityType.SNOW_GOLEM);
+			types.add(EntityType.ACACIA_BOAT);
+			types.add(EntityType.ACACIA_CHEST_BOAT);
+			types.add(EntityType.BAMBOO_RAFT);
+			types.add(EntityType.BAMBOO_CHEST_RAFT);
+			types.add(EntityType.BIRCH_BOAT);
+			types.add(EntityType.BIRCH_CHEST_BOAT);
+			types.add(EntityType.CHERRY_BOAT);
+			types.add(EntityType.CHERRY_CHEST_BOAT);
+			types.add(EntityType.DARK_OAK_BOAT);
+			types.add(EntityType.DARK_OAK_CHEST_BOAT);
+			types.add(EntityType.JUNGLE_BOAT);
+			types.add(EntityType.JUNGLE_CHEST_BOAT);
+			types.add(EntityType.MANGROVE_BOAT);
+			types.add(EntityType.MANGROVE_CHEST_BOAT);
+			types.add(EntityType.OAK_BOAT);
+			types.add(EntityType.OAK_CHEST_BOAT);
+			types.add(EntityType.PALE_OAK_BOAT);
+			types.add(EntityType.PALE_OAK_CHEST_BOAT);
+			types.add(EntityType.SPRUCE_BOAT);
+			types.add(EntityType.SPRUCE_CHEST_BOAT);
+		}
+		else {
+			// entities were renamed...
+			types.add(EntityType.valueOf("SNOWMAN"));
+			types.add(EntityType.valueOf("MUSHROOM_COW"));
 		}
 		
 		return types.toArray(new EntityType[0]);
