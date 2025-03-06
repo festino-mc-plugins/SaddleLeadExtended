@@ -142,9 +142,12 @@ public class MountManager implements Listener {
 			
 			if (item.getType() == Material.SADDLE) {
 				SaddledBear.setSaddled(bear, true);
-				player.getInventory().setItem(event.getHand(), null);
 				bears.add(new SaddledBear(bear));
 				event.setCancelled(true);
+				if (player.getGameMode() != GameMode.CREATIVE) {
+					item.setAmount(item.getAmount() - 1);
+					player.getInventory().setItem(event.getHand(), item);
+				}
 			}
 		} else {
 			PolarBear bear = sb.getBear();
