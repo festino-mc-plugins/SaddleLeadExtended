@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -70,7 +71,7 @@ public class MountManager implements Listener {
 	{
 		SaddledBear.removeLinkedEntities(event.getChunk());
 		for (Entity en : event.getChunk().getEntities()) {
-			if (isSaddled(en)) {
+			if (isSaddledBear(en)) {
 				bears.add(new SaddledBear((PolarBear)en));
 			}
 		}
@@ -133,6 +134,9 @@ public class MountManager implements Listener {
 			if (!(event.getRightClicked() instanceof PolarBear))
 				return;
 			PolarBear bear = (PolarBear) event.getRightClicked();
+			if (!bear.isAdult())
+				return;
+			
 			if (isTarget(bear, player))
 				return;
 			
@@ -203,8 +207,8 @@ public class MountManager implements Listener {
 		return null;
 	}
 	
-	private boolean isSaddled(Entity bear) {
-		return bear instanceof PolarBear && SaddledBear.isSaddled((PolarBear)bear);
+	private boolean isSaddledBear(Entity entity) {
+		return entity instanceof PolarBear && SaddledBear.isSaddled((PolarBear)entity);
 	}
 	
 	private boolean isTarget(Mob agressive, LivingEntity victim) {
